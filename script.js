@@ -32,7 +32,7 @@ const welcome = document.getElementById("welcome");
 let chatHistory = [];
 
 // ======================================================
-// LOAD SETTINGS
+// LOAD SAVED SETTINGS
 // ======================================================
 
 function loadSettings() {
@@ -59,6 +59,7 @@ token
 localStorage.setItem(
 "systemPrompt",
 prompt
+);
 }
 
 // ======================================================
@@ -82,15 +83,18 @@ localStorage.getItem("systemPrompt") || ""
 }
 
 // ======================================================
-// SETTINGS - OPEN
+// OPEN SETTINGS
 // ======================================================
 
-settingsBtn.addEventListener("click", function () {
+settingsBtn.addEventListener(
+"click",
+function () {
 settingsDialog.showModal();
-});
+}
+);
 
 // ======================================================
-// SETTINGS - CLOSE
+// CLOSE SETTINGS
 // ======================================================
 
 closeSettingsBtn.addEventListener(
@@ -108,7 +112,7 @@ settingsDialog.close();
 );
 
 // ======================================================
-// SETTINGS - SAVE
+// SAVE SETTINGS FORM
 // ======================================================
 
 settingsForm.addEventListener(
@@ -126,7 +130,7 @@ settingsDialog.close();
 );
 
 // ======================================================
-// CLOSE SETTINGS BY CLICKING OUTSIDE
+// CLOSE DIALOG WHEN CLICKING OUTSIDE
 // ======================================================
 
 settingsDialog.addEventListener(
@@ -164,8 +168,6 @@ message.className =
 const bubble =
 document.createElement("div");
 
-// IMPORTANT:
-// Your CSS uses .message-content
 bubble.className =
 "message-content";
 
@@ -218,10 +220,12 @@ return message;
 // ======================================================
 
 function scrollToBottom() {
-requestAnimationFrame(function () {
+requestAnimationFrame(
+function () {
 messages.scrollTop =
 messages.scrollHeight;
-});
+}
+);
 }
 
 // ======================================================
@@ -250,7 +254,7 @@ throw new Error(
 }
 
 // ----------------------------------------------------
-// Build the conversation
+// Build conversation
 // ----------------------------------------------------
 
 const messagesForApi = [
@@ -262,14 +266,7 @@ content: userText
 ];
 
 // ----------------------------------------------------
-// Request body
-//
-// GPT-4.1 Nano supports messages.
-// When messages are supplied, prompt and
-// system_prompt are ignored by the model.
-//
-// Therefore, if the user has a system prompt,
-// we put it into the messages array.
+// Add system prompt if one exists
 // ----------------------------------------------------
 
 const system =
@@ -287,6 +284,10 @@ content: system
 finalMessages.push(
 ...messagesForApi
 );
+
+// ----------------------------------------------------
+// Request body
+// ----------------------------------------------------
 
 const requestBody = {
 input: {
@@ -307,31 +308,34 @@ console.log(
 let response;
 
 // ----------------------------------------------------
-// FETCH
+// SEND REQUEST
 // ----------------------------------------------------
 
 try {
-response = await fetch(
+response =
+await fetch(
 MODEL_URL,
 {
 method: "POST",
 
 ```
-    headers: {
-      "Authorization":
-        "Bearer " + token,
+      headers: {
+        "Authorization":
+          "Bearer " + token,
 
-      "Content-Type":
-        "application/json",
+        "Content-Type":
+          "application/json",
 
-      "Prefer":
-        "wait"
-    },
+        "Prefer":
+          "wait"
+      },
 
-    body:
-      JSON.stringify(requestBody)
-  }
-);
+      body:
+        JSON.stringify(
+          requestBody
+        )
+    }
+  );
 ```
 
 } catch (error) {
@@ -343,7 +347,7 @@ console.error(
 );
 
 throw new Error(
-  "The browser could not connect to Replicate. This is not necessarily an internet problem. Check the browser console for the exact error."
+  "The browser could not complete the connection to Replicate. Check the Console for the exact browser error."
 );
 ```
 
@@ -353,16 +357,19 @@ throw new Error(
 // READ RESPONSE
 // ----------------------------------------------------
 
-let data = null;
-
 const responseText =
 await response.text();
 
+let data = null;
+
 try {
+
+```
 data =
-responseText
-? JSON.parse(responseText)
-: null;
+  responseText
+    ? JSON.parse(responseText)
+    : null;
+```
 
 } catch (error) {
 
@@ -389,8 +396,11 @@ if (!response.ok) {
 console.error(
   "Replicate API error:",
   {
-    status: response.status,
-    data: data
+    status:
+      response.status,
+
+    data:
+      data
   }
 );
 
@@ -428,7 +438,7 @@ data
 );
 
 // ----------------------------------------------------
-// EXTRACT OUTPUT
+// EXTRACT RESPONSE
 // ----------------------------------------------------
 
 const answer =
@@ -453,44 +463,45 @@ if (!data) {
 return "";
 }
 
-// GPT-4.1 Nano normally returns:
-//
-// output: ["Hello", " world", ...]
-//
+// Array output
 
 if (Array.isArray(data.output)) {
 
 ```
 return data.output
-  .map(function (part) {
+  .map(
+    function (part) {
 
-    if (
-      typeof part === "string"
-    ) {
-      return part;
+      if (
+        typeof part ===
+        "string"
+      ) {
+        return part;
+      }
+
+      return String(part);
     }
-
-    return String(part);
-
-  })
+  )
   .join("");
 ```
 
 }
 
-// Sometimes output may be a string.
+// String output
 
 if (
-typeof data.output === "string"
+typeof data.output ===
+"string"
 ) {
 return data.output;
 }
 
-// Fallback formats.
+// Object output
 
 if (
 data.output &&
-typeof data.output === "object"
+typeof data.output ===
+"object"
 ) {
 
 ```
@@ -512,8 +523,11 @@ if (
 
 }
 
+// Other possible format
+
 if (
-typeof data.text === "string"
+typeof data.text ===
+"string"
 ) {
 return data.text;
 }
@@ -528,14 +542,17 @@ return "";
 function getFriendlyError(error) {
 
 const message =
-error && error.message
+error &&
+error.message
 ? error.message
 : String(error);
 
 const lower =
 message.toLowerCase();
 
-// Authentication
+// ----------------------------------------------------
+// 401
+// ----------------------------------------------------
 
 if (
 lower.includes("401") ||
@@ -552,7 +569,9 @@ return (
 
 }
 
-// Permission
+// ----------------------------------------------------
+// 403
+// ----------------------------------------------------
 
 if (
 lower.includes("403") ||
@@ -568,7 +587,9 @@ return (
 
 }
 
-// Rate limit
+// ----------------------------------------------------
+// 429
+// ----------------------------------------------------
 
 if (
 lower.includes("429") ||
@@ -584,7 +605,9 @@ return (
 
 }
 
-// Bad request
+// ----------------------------------------------------
+// 400
+// ----------------------------------------------------
 
 if (
 lower.includes("400") ||
@@ -599,7 +622,9 @@ return (
 
 }
 
-// Server error
+// ----------------------------------------------------
+// SERVER ERRORS
+// ----------------------------------------------------
 
 if (
 lower.includes("500") ||
@@ -616,7 +641,9 @@ return (
 
 }
 
-// Browser/network-level failure
+// ----------------------------------------------------
+// BROWSER CONNECTION ERROR
+// ----------------------------------------------------
 
 if (
 lower.includes("failed to fetch") ||
@@ -626,7 +653,7 @@ lower.includes("network error")
 
 ```
 return (
-  "The browser could not complete the connection to Replicate. Your internet may still be working normally. Open DevTools → Console to see the exact browser error."
+  "The browser could not complete the connection to Replicate. Your internet may still be working normally. Check the Console for the exact browser error."
 );
 ```
 
@@ -636,7 +663,7 @@ return message;
 }
 
 // ======================================================
-// SEND CHAT MESSAGE
+// CHAT FORM
 // ======================================================
 
 chatForm.addEventListener(
@@ -656,6 +683,10 @@ if (!text) {
 }
 
 
+// --------------------------------------------------
+// Check token
+// --------------------------------------------------
+
 const token =
   getApiToken();
 
@@ -671,7 +702,7 @@ if (!token) {
 
 
 // --------------------------------------------------
-// Show user message
+// Add user message
 // --------------------------------------------------
 
 addMessage(
@@ -691,6 +722,10 @@ sendBtn.disabled = true;
 messageInput.disabled = true;
 
 
+// --------------------------------------------------
+// Loading
+// --------------------------------------------------
+
 const loadingMessage =
   addLoadingMessage();
 
@@ -698,7 +733,9 @@ const loadingMessage =
 try {
 
   const answer =
-    await sendToReplicate(text);
+    await sendToReplicate(
+      text
+    );
 
 
   loadingMessage.remove();
@@ -718,7 +755,7 @@ try {
 
 
   // ------------------------------------------------
-  // Display assistant response
+  // Display answer
   // ------------------------------------------------
 
   addMessage(
@@ -728,7 +765,7 @@ try {
 
 
   // ------------------------------------------------
-  // Save conversation
+  // Save history
   // ------------------------------------------------
 
   chatHistory.push({
@@ -787,7 +824,6 @@ function () {
 ```
 this.style.height =
   "auto";
-
 
 this.style.height =
   Math.min(
