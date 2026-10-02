@@ -86,12 +86,10 @@ localStorage.getItem("systemPrompt") || ""
 // OPEN SETTINGS
 // ======================================================
 
-settingsBtn.addEventListener(
-"click",
-function () {
-settingsDialog.showModal();
-}
-);
+settingsBtn.addEventListener("click", function () {
+  settingsDialog.showModal();
+});
+
 
 // ======================================================
 // CLOSE SETTINGS
