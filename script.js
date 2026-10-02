@@ -1,3 +1,4 @@
+```javascript
 // ==========================================
 // SIMPLE CHAT — REPLICATE GPT-4.1 NANO
 // ==========================================
@@ -28,7 +29,7 @@ const welcome = document.getElementById("welcome");
 
 
 // ==========================================
-// STORAGE KEYS
+// STORAGE
 // ==========================================
 
 const TOKEN_KEY = "simpleChat_replicateToken";
@@ -36,33 +37,24 @@ const SYSTEM_PROMPT_KEY = "simpleChat_systemPrompt";
 
 
 // ==========================================
-// CHAT STATE
+// STATE
 // ==========================================
 
 let isSending = false;
 
 
 // ==========================================
-// LOAD SAVED SETTINGS
+// SETTINGS
 // ==========================================
 
 function loadSettings() {
-  const savedToken = localStorage.getItem(TOKEN_KEY);
-  const savedSystemPrompt = localStorage.getItem(SYSTEM_PROMPT_KEY);
+  apiTokenInput.value =
+    localStorage.getItem(TOKEN_KEY) || "";
 
-  if (savedToken) {
-    apiTokenInput.value = savedToken;
-  }
-
-  if (savedSystemPrompt) {
-    systemPromptInput.value = savedSystemPrompt;
-  }
+  systemPromptInput.value =
+    localStorage.getItem(SYSTEM_PROMPT_KEY) || "";
 }
 
-
-// ==========================================
-// SAVE SETTINGS
-// ==========================================
 
 function saveSettings() {
   const token = apiTokenInput.value.trim();
@@ -75,25 +67,20 @@ function saveSettings() {
   }
 
   if (systemPrompt) {
-    localStorage.setItem(SYSTEM_PROMPT_KEY, systemPrompt);
+    localStorage.setItem(
+      SYSTEM_PROMPT_KEY,
+      systemPrompt
+    );
   } else {
     localStorage.removeItem(SYSTEM_PROMPT_KEY);
   }
 }
 
 
-// ==========================================
-// GET API TOKEN
-// ==========================================
-
 function getApiToken() {
   return localStorage.getItem(TOKEN_KEY) || "";
 }
 
-
-// ==========================================
-// GET SYSTEM PROMPT
-// ==========================================
 
 function getSystemPrompt() {
   return localStorage.getItem(SYSTEM_PROMPT_KEY) || "";
@@ -104,7 +91,7 @@ function getSystemPrompt() {
 // OPEN SETTINGS
 // ==========================================
 
-settingsBtn.addEventListener("click", () => {
+settingsBtn.addEventListener("click", function () {
   apiTokenInput.value = getApiToken();
   systemPromptInput.value = getSystemPrompt();
 
@@ -120,50 +107,65 @@ function closeSettings() {
   settingsDialog.close();
 }
 
-closeSettingsBtn.addEventListener("click", closeSettings);
 
-cancelSettingsBtn.addEventListener("click", closeSettings);
+closeSettingsBtn.addEventListener(
+  "click",
+  closeSettings
+);
+
+
+cancelSettingsBtn.addEventListener(
+  "click",
+  closeSettings
+);
 
 
 // ==========================================
-// CLOSE DIALOG WHEN CLICKING OUTSIDE
+// CLICK OUTSIDE DIALOG
 // ==========================================
 
-settingsDialog.addEventListener("click", (event) => {
-  const rect = settingsDialog.getBoundingClientRect();
+settingsDialog.addEventListener(
+  "click",
+  function (event) {
+    const rect =
+      settingsDialog.getBoundingClientRect();
 
-  const clickedInside =
-    event.clientX >= rect.left &&
-    event.clientX <= rect.right &&
-    event.clientY >= rect.top &&
-    event.clientY <= rect.bottom;
+    const inside =
+      event.clientX >= rect.left &&
+      event.clientX <= rect.right &&
+      event.clientY >= rect.top &&
+      event.clientY <= rect.bottom;
 
-  if (!clickedInside) {
-    settingsDialog.close();
+    if (!inside) {
+      settingsDialog.close();
+    }
   }
-});
+);
 
 
 // ==========================================
-// SAVE SETTINGS FORM
+// SAVE SETTINGS
 // ==========================================
 
-settingsForm.addEventListener("submit", (event) => {
-  event.preventDefault();
+settingsForm.addEventListener(
+  "submit",
+  function (event) {
+    event.preventDefault();
 
-  saveSettings();
+    saveSettings();
 
-  closeSettings();
+    closeSettings();
 
-  showTemporaryNotice("Settings saved.");
-});
+    showNotice("Settings saved.");
+  }
+);
 
 
 // ==========================================
-// TEMPORARY NOTICE
+// NOTICE
 // ==========================================
 
-function showTemporaryNotice(message) {
+function showNotice(message) {
   const notice = document.createElement("div");
 
   notice.textContent = message;
@@ -178,11 +180,12 @@ function showTemporaryNotice(message) {
   notice.style.color = "#ffffff";
   notice.style.fontSize = "12px";
   notice.style.zIndex = "9999";
-  notice.style.boxShadow = "0 8px 25px rgba(0,0,0,0.15)";
+  notice.style.boxShadow =
+    "0 8px 25px rgba(0,0,0,0.15)";
 
   document.body.appendChild(notice);
 
-  setTimeout(() => {
+  setTimeout(function () {
     notice.remove();
   }, 1800);
 }
@@ -195,15 +198,21 @@ function showTemporaryNotice(message) {
 function addMessage(role, text) {
   welcome.classList.add("hidden");
 
-  const message = document.createElement("div");
-  message.className = `message ${role}`;
+  const message =
+    document.createElement("div");
 
-  const content = document.createElement("div");
+  message.className =
+    "message " + role;
+
+  const content =
+    document.createElement("div");
+
   content.className = "message-content";
 
   content.textContent = text;
 
   message.appendChild(content);
+
   messagesContainer.appendChild(message);
 
   scrollToBottom();
@@ -213,29 +222,43 @@ function addMessage(role, text) {
 
 
 // ==========================================
-// ADD LOADING MESSAGE
+// LOADING MESSAGE
 // ==========================================
 
 function addLoadingMessage() {
   welcome.classList.add("hidden");
 
-  const message = document.createElement("div");
-  message.className = "message assistant";
+  const message =
+    document.createElement("div");
+
+  message.className =
+    "message assistant";
+
   message.id = "loadingMessage";
 
-  const content = document.createElement("div");
-  content.className = "message-content";
+  const content =
+    document.createElement("div");
 
-  const loading = document.createElement("div");
-  loading.className = "loading-message";
+  content.className =
+    "message-content";
+
+  const loading =
+    document.createElement("div");
+
+  loading.className =
+    "loading-message";
 
   for (let i = 0; i < 3; i++) {
-    const dot = document.createElement("span");
+    const dot =
+      document.createElement("span");
+
     dot.className = "loading-dot";
+
     loading.appendChild(dot);
   }
 
   content.appendChild(loading);
+
   message.appendChild(content);
 
   messagesContainer.appendChild(message);
@@ -246,25 +269,24 @@ function addLoadingMessage() {
 }
 
 
-// ==========================================
-// REMOVE LOADING MESSAGE
-// ==========================================
-
 function removeLoadingMessage() {
-  const loadingMessage = document.getElementById("loadingMessage");
+  const loading =
+    document.getElementById(
+      "loadingMessage"
+    );
 
-  if (loadingMessage) {
-    loadingMessage.remove();
+  if (loading) {
+    loading.remove();
   }
 }
 
 
 // ==========================================
-// SCROLL TO BOTTOM
+// SCROLL
 // ==========================================
 
 function scrollToBottom() {
-  requestAnimationFrame(() => {
+  requestAnimationFrame(function () {
     messagesContainer.scrollTop =
       messagesContainer.scrollHeight;
   });
@@ -272,21 +294,27 @@ function scrollToBottom() {
 
 
 // ==========================================
-// AUTO RESIZE TEXTAREA
+// TEXTAREA AUTO RESIZE
 // ==========================================
 
 function resizeTextarea() {
   messageInput.style.height = "auto";
 
-  const newHeight = Math.min(
-    messageInput.scrollHeight,
-    160
-  );
+  const height =
+    Math.min(
+      messageInput.scrollHeight,
+      160
+    );
 
-  messageInput.style.height = `${newHeight}px`;
+  messageInput.style.height =
+    height + "px";
 }
 
-messageInput.addEventListener("input", resizeTextarea);
+
+messageInput.addEventListener(
+  "input",
+  resizeTextarea
+);
 
 
 // ==========================================
@@ -294,99 +322,120 @@ messageInput.addEventListener("input", resizeTextarea);
 // SHIFT + ENTER = NEW LINE
 // ==========================================
 
-messageInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter" && !event.shiftKey) {
+messageInput.addEventListener(
+  "keydown",
+  function (event) {
+    if (
+      event.key === "Enter" &&
+      !event.shiftKey
+    ) {
+      event.preventDefault();
+
+      chatForm.requestSubmit();
+    }
+  }
+);
+
+
+// ==========================================
+// CHAT FORM
+// ==========================================
+
+chatForm.addEventListener(
+  "submit",
+  async function (event) {
     event.preventDefault();
 
-    chatForm.requestSubmit();
-  }
-});
-
-
-// ==========================================
-// SEND MESSAGE
-// ==========================================
-
-chatForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  if (isSending) {
-    return;
-  }
-
-  const prompt = messageInput.value.trim();
-
-  if (!prompt) {
-    return;
-  }
-
-  const apiToken = getApiToken();
-
-  if (!apiToken) {
-    addMessage(
-      "assistant",
-      "Please open Settings ⚙ and enter your Replicate API token first."
-    );
-
-    settingsDialog.showModal();
-    apiTokenInput.focus();
-
-    return;
-  }
-
-  // Show user's message
-  addMessage("user", prompt);
-
-  // Clear input
-  messageInput.value = "";
-  messageInput.style.height = "auto";
-
-  // Lock sending
-  isSending = true;
-  sendBtn.disabled = true;
-
-  // Show loading
-  addLoadingMessage();
-
-  try {
-    const response = await sendToReplicate(
-      prompt,
-      apiToken,
-      getSystemPrompt()
-    );
-
-    removeLoadingMessage();
-
-    const assistantText = extractResponseText(response);
-
-    if (!assistantText) {
-      addMessage(
-        "assistant",
-        "The model returned an empty response."
-      );
-    } else {
-      addMessage("assistant", assistantText);
+    if (isSending) {
+      return;
     }
 
-  } catch (error) {
-    removeLoadingMessage();
+    const prompt =
+      messageInput.value.trim();
+
+    if (!prompt) {
+      return;
+    }
+
+    const apiToken =
+      getApiToken();
+
+    if (!apiToken) {
+      addMessage(
+        "assistant",
+        "Please open Settings and enter your Replicate API token first."
+      );
+
+      settingsDialog.showModal();
+
+      apiTokenInput.focus();
+
+      return;
+    }
 
     addMessage(
-      "assistant",
-      `Error: ${getReadableError(error)}`
+      "user",
+      prompt
     );
 
-  } finally {
+    messageInput.value = "";
+
+    messageInput.style.height =
+      "auto";
+
+    isSending = true;
+
+    sendBtn.disabled = true;
+
+    addLoadingMessage();
+
+    try {
+      const response =
+        await sendToReplicate(
+          prompt,
+          apiToken,
+          getSystemPrompt()
+        );
+
+      removeLoadingMessage();
+
+      const text =
+        extractResponseText(
+          response
+        );
+
+      if (text) {
+        addMessage(
+          "assistant",
+          text
+        );
+      } else {
+        addMessage(
+          "assistant",
+          "The model returned an empty response."
+        );
+      }
+    } catch (error) {
+      removeLoadingMessage();
+
+      addMessage(
+        "assistant",
+        "Error: " +
+          getReadableError(error)
+      );
+    }
+
     isSending = false;
+
     sendBtn.disabled = false;
 
     messageInput.focus();
   }
-});
+);
 
 
 // ==========================================
-// REPLICATE API REQUEST
+// REPLICATE REQUEST
 // ==========================================
 
 async function sendToReplicate(
@@ -394,7 +443,7 @@ async function sendToReplicate(
   apiToken,
   systemPrompt
 ) {
-  const requestBody = {
+  const body = {
     input: {
       top_p: 1,
       prompt: prompt,
@@ -408,36 +457,46 @@ async function sendToReplicate(
     }
   };
 
-  const response = await fetch(REPLICATE_URL, {
-    method: "POST",
+  const response =
+    await fetch(
+      REPLICATE_URL,
+      {
+        method: "POST",
 
-    headers: {
-      "Authorization": `Bearer ${apiToken}`,
-      "Content-Type": "application/json",
-      "Prefer": "wait"
-    },
+        headers: {
+          "Authorization":
+            "Bearer " + apiToken,
 
-    body: JSON.stringify(requestBody)
-  });
+          "Content-Type":
+            "application/json",
+
+          "Prefer": "wait"
+        },
+
+        body:
+          JSON.stringify(body)
+      }
+    );
 
   let data;
 
   try {
     data = await response.json();
-  } catch {
+  } catch (error) {
     throw new Error(
-      `Server returned HTTP ${response.status}.`
+      "Replicate returned an invalid response."
     );
   }
 
   if (!response.ok) {
-    const errorMessage =
-      data?.detail ||
-      data?.error ||
-      data?.title ||
-      `Request failed with HTTP ${response.status}.`;
+    const message =
+      data.detail ||
+      data.error ||
+      data.title ||
+      "Request failed with HTTP " +
+        response.status;
 
-    throw new Error(errorMessage);
+    throw new Error(message);
   }
 
   return data;
@@ -445,7 +504,7 @@ async function sendToReplicate(
 
 
 // ==========================================
-// EXTRACT MODEL RESPONSE
+// EXTRACT RESPONSE
 // ==========================================
 
 function extractResponseText(data) {
@@ -453,30 +512,29 @@ function extractResponseText(data) {
     return "";
   }
 
-  /*
-    Replicate can return output in different formats.
-
-    This function handles:
-    - output as a string
-    - output as an array of strings
-    - output as an array of objects
-    - output as an object
-  */
-
-  if (typeof data.output === "string") {
+  if (
+    typeof data.output ===
+    "string"
+  ) {
     return data.output.trim();
   }
 
-  if (Array.isArray(data.output)) {
+  if (
+    Array.isArray(data.output)
+  ) {
     return data.output
-      .map((item) => {
-        if (typeof item === "string") {
+      .map(function (item) {
+        if (
+          typeof item ===
+          "string"
+        ) {
           return item;
         }
 
         if (
           item &&
-          typeof item === "object"
+          typeof item ===
+            "object"
         ) {
           return (
             item.text ||
@@ -494,7 +552,8 @@ function extractResponseText(data) {
 
   if (
     data.output &&
-    typeof data.output === "object"
+    typeof data.output ===
+      "object"
   ) {
     return (
       data.output.text ||
@@ -504,11 +563,17 @@ function extractResponseText(data) {
     ).trim();
   }
 
-  if (typeof data.text === "string") {
+  if (
+    typeof data.text ===
+    "string"
+  ) {
     return data.text.trim();
   }
 
-  if (typeof data.content === "string") {
+  if (
+    typeof data.content ===
+    "string"
+  ) {
     return data.content.trim();
   }
 
@@ -517,7 +582,7 @@ function extractResponseText(data) {
 
 
 // ==========================================
-// READABLE ERROR
+// ERROR MESSAGE
 // ==========================================
 
 function getReadableError(error) {
@@ -529,7 +594,8 @@ function getReadableError(error) {
     error.message ||
     String(error);
 
-  const lower = message.toLowerCase();
+  const lower =
+    message.toLowerCase();
 
   if (
     lower.includes("401") ||
@@ -551,14 +617,14 @@ function getReadableError(error) {
     lower.includes("429") ||
     lower.includes("rate limit")
   ) {
-    return "The API rate limit was reached. Please wait a little and try again.";
+    return "The API rate limit was reached. Please wait and try again.";
   }
 
   if (
     lower.includes("failed to fetch") ||
     lower.includes("network")
   ) {
-    return "The request could not reach Replicate. Please check your internet connection.";
+    return "The request could not reach Replicate. Check your internet connection.";
   }
 
   return message;
@@ -566,7 +632,7 @@ function getReadableError(error) {
 
 
 // ==========================================
-// INITIALIZE
+// INITIALIZE APP
 // ==========================================
 
 loadSettings();
@@ -578,12 +644,15 @@ messageInput.focus();
 // ESCAPE KEY
 // ==========================================
 
-document.addEventListener("keydown", (event) => {
-  if (
-    event.key === "Escape" &&
-    settingsDialog.open
-  ) {
-    settingsDialog.close();
+document.addEventListener(
+  "keydown",
+  function (event) {
+    if (
+      event.key === "Escape" &&
+      settingsDialog.open
+    ) {
+      settingsDialog.close();
+    }
   }
-});
+);
 ```
